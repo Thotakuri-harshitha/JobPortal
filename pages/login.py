@@ -1,83 +1,65 @@
 import streamlit as st
 import json
 
-st.set_page_config(
-    page_title="JobPortal - Login",
-    page_icon="💼",
-    layout="centered"
-)
-
 st.title("💼 JobPortal")
-st.subheader("Welcome back 👋")
-st.write("Login to continue your journey 🚀")
-
-st.divider()
 
 with st.form("LoginForm"):
 
-    st.header("🔐 Login")
+    st.subheader("🔐 Login")
 
-    email = st.text_input(
+    e = st.text_input(
         "📧 Email",
-        placeholder="Enter your email"
+        placeholder="Enter Email here"
     )
 
-    password = st.text_input(
+    p = st.text_input(
         "🔒 Password",
-        placeholder="Enter your password",
+        placeholder="Enter Password here",
         type="password"
     )
 
-    role = st.selectbox(
+    r = st.selectbox(
         "💼 Choose Role",
-        ["JobSeeker", "Recruiter"]
+        ["Recruiter", "JobSeeker"]
     )
 
-    login_button = st.form_submit_button(
-        "🔑 Login",
-        use_container_width=True
-    )
+    btn = st.form_submit_button("🚀 Login")
 
-    if login_button:
+    if btn:
 
-        if not email or not password:
-            st.warning("⚠️ Please enter your email and password.")
+        with open("users.json", "r") as r_file:
+            all_users = json.load(r_file)
 
-        else:
+        user_found = False
 
-            with open("users.json", "r") as file:
-                all_users = json.load(file)
+        for user in all_users:
 
-            user_found = False
+            if (
+                user["email"] == e
+                and user["password"] == p
+                and user["role"] == r
+            ):
 
-            for user in all_users:
+                user_found = True
 
-                if (
-                    user["email"] == email
-                    and user["password"] == password
-                    and user["role"] == role
-                ):
+                st.session_state["loggedin_user"] = {
+                    "email": e,
+                    "role": r
+                }
 
-                    user_found = True
+                st.success("🎉 Login Successful!")
 
-                    st.session_state["loggedin_user"] = {
-                        "email": email,
-                        "role": role
-                    }
+                if r == "Recruiter":
+                    st.switch_page(
+                        "pages/RecruiterDashboard.py"
+                    )
 
-                    st.success("🎉 Login successful!")
+                elif r == "JobSeeker":
+                    st.switch_page(
+                        "pages/JobSeekerDashboard.py"
+                    )
 
-                    if role == "JobSeeker":
-                        st.switch_page(
-                            "pages/JobSeekerDashboard.py"
-                        )
+                break
 
-                    elif role == "Recruiter":
-                        st.switch_page(
-                            "pages/RecruiterDashboard.py"
-                        )
-
-                    break
-
-            if not user_found:
-                st.error("❌ Invalid email, password or role.")
+        if not user_found:
+            st.error("❌ Invalid Email, Password or Role.")

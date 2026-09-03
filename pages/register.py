@@ -1,80 +1,67 @@
 import streamlit as st
 import json
 
-st.set_page_config(
-    page_title="JobPortal - Register",
-    page_icon="💼",
-    layout="centered"
-)
-
 st.title("💼 JobPortal")
-st.subheader("Create your account")
-st.write("Join JobPortal and start your career journey 🚀")
-
-st.divider()
 
 with st.form("RegisterForm"):
 
-    st.header("📝 Register")
+    st.subheader("📝 Register")
 
-    name = st.text_input(
+    n = st.text_input(
         "👤 Name",
-        placeholder="Enter your name"
+        placeholder="Enter Name here"
     )
 
-    email = st.text_input(
+    e = st.text_input(
         "📧 Email",
-        placeholder="Enter your email"
+        placeholder="Enter Email here"
     )
 
-    password = st.text_input(
+    p = st.text_input(
         "🔒 Password",
-        placeholder="Create a password",
+        placeholder="Enter Password here",
         type="password"
     )
 
-    confirm_password = st.text_input(
+    c_p = st.text_input(
         "🔒 Confirm Password",
-        placeholder="Re-enter your password",
+        placeholder="Re-Enter Password here",
         type="password"
     )
 
-    role = st.selectbox(
+    r = st.selectbox(
         "💼 Choose Role",
-        ["JobSeeker", "Recruiter"]
+        ["Recruiter", "JobSeeker"]
     )
 
-    register_button = st.form_submit_button(
-        "🚀 Create Account",
-        use_container_width=True
-    )
+    btn = st.form_submit_button("🚀 Register")
 
-    if register_button:
+    if btn:
 
-        if not name or not email or not password or not confirm_password:
+        if not n or not e or not p or not c_p:
             st.warning("⚠️ Please fill in all the fields.")
 
-        elif password != confirm_password:
+        elif p != c_p:
             st.error("❌ Passwords do not match.")
 
         else:
 
-            with open("users.json", "r") as file:
-                all_users = json.load(file)
-
             new_user = {
-                "name": name,
-                "email": email,
-                "password": password,
-                "c_password": confirm_password,
-                "role": role
+                "name": n,
+                "email": e,
+                "password": p,
+                "c_password": c_p,
+                "role": r
             }
+
+            with open("users.json", "r") as r_file:
+                all_users = json.load(r_file)
 
             all_users.append(new_user)
 
-            with open("users.json", "w") as file:
-                json.dump(all_users, file, indent=4)
+            with open("users.json", "w") as w_file:
+                json.dump(all_users, w_file, indent=4)
 
-            st.success("🎉 Account created successfully!")
+            st.success("🎉 Successfully registered!")
 
             st.switch_page("pages/login.py")
